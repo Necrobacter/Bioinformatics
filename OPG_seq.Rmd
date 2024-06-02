@@ -1,0 +1,418 @@
+---
+title: "OPG seq"
+output: 
+  html_document: 
+    fig_width: 10
+    fig_height: 8
+    fig_caption: true
+date: "2024-05-06"
+editor_options: 
+  chunk_output_type: inline
+---
+
+Ctrl+Shift+S = Runs all code chunks
+
+Alt+Ctrl+S = Save All
+
+# Sources/Notes:
+
+## Preprocessing:
+
+-   [Importing and demultiplexing (youtube.com)](https://www.youtube.com/watch?v=QMqKd7HGBbQ)
+
+    -   Files already demultiplexed (in individual files)
+
+-   **Conda:**
+
+    -   <https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html>
+
+        -   Requires ***Python***. Use with python code chunks
+
+    -   Installing miniconda:
+
+        -   <https://docs.anaconda.com/free/miniconda/miniconda-install/>
+
+            -   Go to quick command line install
+                -   Select Linux
+
+    -   Setting up Conda:
+
+        -   <https://bioconda.github.io/#usage>
+
+-   **Dada2** Tutorial:
+
+    -   DADA2 Pipeline Tutorial (1.8) (benjjneb.github.io)
+        -   <https://benjjneb.github.io/dada2/tutorial.html>
+    -   Filter and Trim Reads:
+        -   [2 Filter and trim reads with DADA2 - YouTube](https://www.youtube.com/watch?v=X5kSHjY2000)
+    -   Cutadapt:
+        -   <https://cutadapt.readthedocs.io/en/stable/installation.html>
+            -   Use Terminal
+
+## Dependencies:
+
+## - Binaries:
+
+-   You'll see the word "binary" used in a similar sense when downloading a program from somewhere. You'll sometimes see a "binary distribution" and a "source distribution":
+
+    -   The source distribution is going to be all the source code.
+
+    -   The binary distribution is going to contain the compiled executable.
+
+## - Git:
+
+-   Using the terminal, install Git following this site:
+
+    -   <https://happygitwithr.com/install-git>
+
+-   Bioinformatics GitHub PAT; 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
+
+# Getting Started:
+
+-   The working directory: Depending on where you're working from
+
+```{r}
+setwd("D:/OneDrive - University of Massachusetts/Captains Log/Data/Seq/v3_fastq") # Home working Directory
+
+setwd("E:/OneDrive - University of Massachusetts/Captains Log/Data/Seq/v3_fastq") # UMass working Directory
+```
+
+# Necessary Environments:
+
+-   Windows Subsystem for linux and Bash:
+
+    -   If in windows:
+
+        -   Enable windows subsystems fo linux
+
+        -   go to Tools \> Global Options \> Terminal \> set "Initial Directory" to "Current working directory" & "New Terminals open with" to "Bash (Windows subsystems for linux)"
+
+-   BiocManager is necessary for installing and running DADA2
+
+-   "Cutadapt" is a linux product and needs conda to help run the package. hence we need to install conda into our working environment;
+
+    -   Ha! Conda; Python? get it?
+
+    -   Needs to be done in terminal and windows powershell
+
+        -   Tools \> Terminal \> Terminal Options \> Set "New Terminals Open With" set "Windows Powershell"
+
+## Installs:
+
+### Terminal:
+
+If in windows, enable & set up windows subsystem for linux (WSL); can be done in settings/ search how to
+
+-   Once WSL has been enabled and set up go to:
+
+    -   Tools \> Global Options \> Terminal \> set "Initial Directory" to "Current working directory" & "New Terminals open with" to "Bash (Windows subsystems for linux)"
+
+-   Bash code should be run in the terminal once opened
+
+    -   <div>
+
+        ```{bash}
+        mkdir -p ~/miniconda3
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+        bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+        rm -rf ~/miniconda3/miniconda.sh
+        ```
+
+        ```{bash}
+        ~/miniconda3/bin/conda init bash
+        ```
+
+        ```{bash}
+        export PS1='>' 
+        #Cleans up giant file path that makes it hard to type long Linux codes
+        ```
+
+        </div>
+
+-   Install Git:
+
+    ```{bash}
+    which git
+    ## /usr/bin/git
+    ```
+
+    ```{bash}
+    git --version
+    ## git version 2.34.1 currently installed, Following git install instruction link at the bottom will show how to install git in Windows, Mac adn Lynux
+    ```
+
+-   Connect Rstudio to GitHub:
+
+    ```{bash}
+    # Make sure youre in home directory
+    # Clone git library using "git clone [link to github repository]"
+    git clone https://github.com/Necrobacter/Bioinformatics.git
+    ```
+
+    ```{r}
+    # Set up PAT from R Consol, NOT Terminal
+    usethis::create_github_token()
+    # Give PAT access to whatever, I select everything, this isnt a multimillion dollar comopany
+    gitcreds::gitcreds_set()
+    ```
+
+# R:
+
+## One time installs:
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager") # Nescesssry for DADA2
+install.packages("devtools")
+install.packages("pdftools")
+install.packages("fastqcr")
+install.packages("reticulate")
+library("reticulate")
+devtools::install_github("jbisanz/qiime2R") # Install qiime 2select "1" to update all
+BiocManager::install("dada2")
+BiocManager::install("cutadapt")# Version 3.19 is for R version 4.4.0 and up
+#Always select "no" when asked to restart R
+```
+
+## Libraries: (Load on start up)
+
+```{r}
+library("devtools") # Redunadancies never hurt
+library("dada2")
+library("knitr")
+library("ggplot2")
+library("dplyr")
+library("fastqcr")
+# Call libraries before they can be used
+```
+
+## Getting started:
+
+### Pre-processing:
+
+#### Cutadapt:
+
+Bash = WSL Terminal
+
+```{bash}
+sudo apt install cutadapt #Install cutadapt in linux
+```
+
+-   Getting Started:
+
+```{r}
+
+```
+
+### List files:
+
+-   Make sure all files are in their corresponding folder
+
+```{r,}
+# CHANGE to the directory containing the fastq files after unzipping.
+path_16S <- "16S"
+path_23S <- "23S"
+path_q16S <- "q16S"
+path_q23S <- "q23S"
+# List files in directory
+list.files(path_16S)
+list.files(path_23S)
+list.files(path_q16S)
+list.files(path_q23S)
+```
+
+### Reading in files:
+
+```{r, error=TRUE}
+# Forward and reverse fastq filenames have format: SAMPLENAME_R1_001.fastq and SAMPLENAME_R2_001.fastq
+r1_16S <- sort(list.files(path_16S, pattern="_R1_001.fastq", full.names = TRUE))
+r2_16S<- sort(list.files(path_16S, pattern="_R2_001.fastq", full.names = TRUE))
+# Extract sample names, assuming filenames have format: SAMPLENAME_XXX.fastq
+sample.names <- sapply(strsplit(basename(r1_16S), "_"), `[`, 1)
+list(r1_16S)
+list(r2_16S)
+```
+
+## Quality Score PDF Print (Output in Drive)
+
+### 16S + 23S Read 1+2 Q-score:
+
+-   In *gray-scale* is a heat map of the frequency of each quality score at each base position. The mean quality score at each position is shown by the *green line*, and the quartiles of the quality score distribution by the *orange lines*. The red line shows the scaled proportion of reads that extend to at least that position (this is more useful for other sequencing technologies, as Illumina reads are typically all the same length, hence the flat red line).
+
+```{r, error=TRUE}
+pdf("16s_r1_Q.pdf", onefile = TRUE) #Open and create a PDF file in the current working directory and name it "16s_r1_Q.pdf" 
+plotQualityProfile(r1_16S[1])
+plotQualityProfile(r1_16S[2])
+plotQualityProfile(r1_16S[3])
+plotQualityProfile(r1_16S[4])
+plotQualityProfile(r1_16S[5])
+plotQualityProfile(r1_16S[6])
+plotQualityProfile(r1_16S[7])
+plotQualityProfile(r1_16S[8])
+plotQualityProfile(r1_16S[9])
+plotQualityProfile(r1_16S[10])
+plotQualityProfile(r1_16S[11])
+plotQualityProfile(r1_16S[12])
+plotQualityProfile(r1_16S[13])
+plotQualityProfile(r1_16S[14])
+plotQualityProfile(r1_16S[15])
+plotQualityProfile(r1_16S[16])
+plotQualityProfile(r1_16S[17])
+plotQualityProfile(r1_16S[18])
+plotQualityProfile(r1_16S[19])
+plotQualityProfile(r1_16S[20])
+plotQualityProfile(r1_16S[21])
+plotQualityProfile(r1_16S[22])
+plotQualityProfile(r1_16S[23])
+plotQualityProfile(r1_16S[24])
+plotQualityProfile(r1_16S[25])
+plotQualityProfile(r1_16S[26])
+plotQualityProfile(r1_16S[27])
+plotQualityProfile(r1_16S[28])
+plotQualityProfile(r1_16S[29])
+plotQualityProfile(r1_16S[30])
+plotQualityProfile(r1_16S[31])
+plotQualityProfile(r1_16S[32])
+plotQualityProfile(r1_16S[33])
+plotQualityProfile(r1_16S[34])
+plotQualityProfile(r1_16S[35])
+plotQualityProfile(r1_16S[36])
+plotQualityProfile(r1_16S[37])
+plotQualityProfile(r1_16S[38])
+plotQualityProfile(r1_16S[39])
+plotQualityProfile(r1_16S[40])
+plotQualityProfile(r1_16S[41])
+plotQualityProfile(r1_16S[42])
+plotQualityProfile(r1_16S[43])
+plotQualityProfile(r1_16S[44])
+plotQualityProfile(r1_16S[45])
+plotQualityProfile(r1_16S[46])
+plotQualityProfile(r1_16S[47])
+plotQualityProfile(r1_16S[48])
+plotQualityProfile(r1_16S[49])
+plotQualityProfile(r1_16S[50])
+plotQualityProfile(r1_16S[51])
+plotQualityProfile(r1_16S[52])
+plotQualityProfile(r1_16S[53])
+plotQualityProfile(r1_16S[54])
+plotQualityProfile(r1_16S[55])
+plotQualityProfile(r1_16S[56])
+plotQualityProfile(r1_16S[57])
+plotQualityProfile(r1_16S[58])
+plotQualityProfile(r1_16S[59])
+plotQualityProfile(r1_16S[60])
+plotQualityProfile(r1_16S[61])
+plotQualityProfile(r1_16S[62])
+plotQualityProfile(r1_16S[63])
+plotQualityProfile(r1_16S[64])
+plotQualityProfile(r1_16S[65])
+plotQualityProfile(r1_16S[66])
+plotQualityProfile(r1_16S[67])
+plotQualityProfile(r1_16S[68])
+plotQualityProfile(r1_16S[69])
+plotQualityProfile(r1_16S[70])
+plotQualityProfile(r1_16S[71])
+plotQualityProfile(r1_16S[72])
+plotQualityProfile(r1_16S[73])
+plotQualityProfile(r1_16S[74])
+plotQualityProfile(r1_16S[75])
+plotQualityProfile(r1_16S[76])
+plotQualityProfile(r1_16S[77])
+plotQualityProfile(r1_16S[78])
+plotQualityProfile(r1_16S[79])
+plotQualityProfile(r1_16S[80])
+dev.off()
+
+pdf("16s_r2_Q.pdf", onefile = TRUE) #Open and create a PDF file in the current working directory and name it "16s_r2_Q.pdf" 
+plotQualityProfile(r2_16S[1])
+plotQualityProfile(r2_16S[2])
+plotQualityProfile(r2_16S[3])
+plotQualityProfile(r2_16S[4])
+plotQualityProfile(r2_16S[5])
+plotQualityProfile(r2_16S[6])
+plotQualityProfile(r2_16S[7])
+plotQualityProfile(r2_16S[8])
+plotQualityProfile(r2_16S[9])
+plotQualityProfile(r2_16S[10])
+plotQualityProfile(r2_16S[11])
+plotQualityProfile(r2_16S[12])
+plotQualityProfile(r2_16S[13])
+plotQualityProfile(r2_16S[14])
+plotQualityProfile(r2_16S[15])
+plotQualityProfile(r2_16S[16])
+plotQualityProfile(r2_16S[17])
+plotQualityProfile(r2_16S[18])
+plotQualityProfile(r2_16S[19])
+plotQualityProfile(r2_16S[20])
+plotQualityProfile(r2_16S[21])
+plotQualityProfile(r2_16S[22])
+plotQualityProfile(r2_16S[23])
+plotQualityProfile(r2_16S[24])
+plotQualityProfile(r2_16S[25])
+plotQualityProfile(r2_16S[26])
+plotQualityProfile(r2_16S[27])
+plotQualityProfile(r2_16S[28])
+plotQualityProfile(r2_16S[29])
+plotQualityProfile(r2_16S[30])
+plotQualityProfile(r2_16S[31])
+plotQualityProfile(r2_16S[32])
+plotQualityProfile(r2_16S[33])
+plotQualityProfile(r2_16S[34])
+plotQualityProfile(r2_16S[35])
+plotQualityProfile(r2_16S[36])
+plotQualityProfile(r2_16S[37])
+plotQualityProfile(r2_16S[38])
+plotQualityProfile(r2_16S[39])
+plotQualityProfile(r2_16S[40])
+plotQualityProfile(r2_16S[41])
+plotQualityProfile(r2_16S[42])
+plotQualityProfile(r2_16S[43])
+plotQualityProfile(r2_16S[44])
+plotQualityProfile(r2_16S[45])
+plotQualityProfile(r2_16S[46])
+plotQualityProfile(r2_16S[47])
+plotQualityProfile(r2_16S[48])
+plotQualityProfile(r2_16S[49])
+plotQualityProfile(r2_16S[50])
+plotQualityProfile(r2_16S[51])
+plotQualityProfile(r2_16S[52])
+plotQualityProfile(r2_16S[53])
+plotQualityProfile(r2_16S[54])
+plotQualityProfile(r2_16S[55])
+plotQualityProfile(r2_16S[56])
+plotQualityProfile(r2_16S[57])
+plotQualityProfile(r2_16S[58])
+plotQualityProfile(r2_16S[59])
+plotQualityProfile(r2_16S[60])
+plotQualityProfile(r2_16S[61])
+plotQualityProfile(r2_16S[62])
+plotQualityProfile(r2_16S[63])
+plotQualityProfile(r2_16S[64])
+plotQualityProfile(r2_16S[65])
+plotQualityProfile(r2_16S[66])
+plotQualityProfile(r2_16S[67])
+plotQualityProfile(r2_16S[68])
+plotQualityProfile(r2_16S[69])
+plotQualityProfile(r2_16S[70])
+plotQualityProfile(r2_16S[71])
+plotQualityProfile(r2_16S[72])
+plotQualityProfile(r2_16S[73])
+plotQualityProfile(r2_16S[74])
+plotQualityProfile(r2_16S[75])
+plotQualityProfile(r2_16S[76])
+plotQualityProfile(r2_16S[77])
+plotQualityProfile(r2_16S[78])
+plotQualityProfile(r2_16S[79])
+plotQualityProfile(r2_16S[80])
+dev.off()
+```
+
+## Filter n' Trim:
+
+### Terminal:
+
+# Test:
+
+```{r}
+
+```
