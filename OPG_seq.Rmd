@@ -107,27 +107,45 @@ If in windows, enable & set up windows subsystem for linux (WSL); can be done in
 
     -   Tools \> Global Options \> Terminal \> set "Initial Directory" to "Current working directory" & "New Terminals open with" to "Bash (Windows subsystems for linux)"
 
--   Bash code should be run in the terminal once opened
+#### Installing conda and loading environment:
 
-    -   <div>
+-   <div>
 
-        ```{bash}
-        mkdir -p ~/miniconda3
-        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
-        bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
-        rm -rf ~/miniconda3/miniconda.sh
-        ```
+    ```{bash}
+    mkdir -p ~/miniconda3
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+    bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+    ```
 
-        ```{bash}
-        ~/miniconda3/bin/conda init bash
-        ```
+    ```{bash}
+    # initiate conda
+    ~/miniconda3/bin/conda init bash
+    ~/miniconda3/bin/conda init zsh
+    # Restart Terminacl (Bash)
+    source ~/.bashrc
+    # CHeck conda
+    which conda
+    ```
 
-        ```{bash}
-        export PS1='>' 
-        #Cleans up giant file path that makes it hard to type long Linux codes
-        ```
+    ```{bash}
+    export PS1='>' 
+    #Cleans up giant file path that makes it hard to type long Linux codes
+    ```
 
-        </div>
+    </div>
+
+[Terminal needs to be in conda environment at this point!!!]{.underline}
+
+#### Installing cutadapt in conda environment:
+
+```{bash}
+# configure conda
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+# install cutadapt
+conda create -n cutadapt cutadapt
+```
 
 -   Install Git:
 
@@ -195,7 +213,10 @@ library("fastqcr")
 Bash = WSL Terminal
 
 ```{bash}
-sudo apt install cutadapt #Install cutadapt in linux
+# Load conda
+
+#
+conda create -n cutadapt cutadapt #Install cutadapt in conda
 ```
 
 -   Getting Started:
