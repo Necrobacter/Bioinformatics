@@ -119,6 +119,7 @@ If in windows, enable & set up windows subsystem for linux (WSL); can be done in
         ```
 
         ```{bash}
+        # initiate conda
         ~/miniconda3/bin/conda init bash
         ```
 
