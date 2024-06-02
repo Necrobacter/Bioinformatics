@@ -1,0 +1,69 @@
+"0","    # Set up PAT from R Consol, NOT Terminal"
+"0","    usethis::create_github_token()"
+"1","[31m•[39m Call [90m`gitcreds::gitcreds_set()`[39m to register this token in the local Git credential store
+  It is also a great idea to store this token in any password-management software that you use
+"
+"1","[32m✔[39m Opening URL [34m'https://github.com/settings/tokens/new?scopes=repo,user,gist,workflow&description=DESCRIBE THE TOKEN\'S USE CASE'[39m
+"
+"0","    # Give PAT access to whatever, I select everything, this isnt a multimillion dollar comopany"
+"0","    gitcreds::gitcreds_set()"
+"1","
+-> Your current credentials for 'https://github.com':
+
+"
+"1","  protocol: https
+  host    : github.com
+  username: Necrobacter
+  password: <-- hidden -->
+
+"
+"1","-> What would you like to do?"
+"1"," "
+"1","
+"
+"1",""
+"1","
+"
+"1","1: Abort update with error, and keep the existing credentials"
+"1","
+"
+"1","2: Replace these credentials"
+"1","
+"
+"1","3: See the password / token"
+"1","
+"
+"1",""
+"1","
+"
+"0","3"
+"1","
+Current password: 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
+
+
+"
+"1","-> What would you like to do?"
+"1"," "
+"1","
+"
+"1",""
+"1","
+"
+"1","1: Abort update with error, and keep the existing credentials"
+"1","
+"
+"1","2: Replace these credentials"
+"1","
+"
+"1","3: See the password / token"
+"1","
+"
+"1",""
+"1","
+"
+"1","Enter an item from the menu, or 0 to exit
+"
+"0","1"
+"2","Error in throw(new_error(""gitcreds_abort_replace_error"")) : 
+  User aborted updating credentials
+"

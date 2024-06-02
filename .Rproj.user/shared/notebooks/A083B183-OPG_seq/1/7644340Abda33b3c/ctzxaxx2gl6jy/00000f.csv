@@ -1,0 +1,25 @@
+"0","library(""devtools"") # Redunadancies never hurt"
+"2","Loading required package: usethis
+"
+"0","library(""dada2"")"
+"2","Loading required package: Rcpp
+"
+"0","library(""knitr"")"
+"0","library(""ggplot2"")"
+"0","library(""dplyr"")"
+"2","
+Attaching package: ‘dplyr’
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+"
+"0","library(""fastqcr"")"
+"0","# Call libraries before they can be used"
