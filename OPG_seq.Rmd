@@ -426,8 +426,7 @@ date
 
 ```{bash}
 # 1. Command-line arguments:
-indir = $1
-outdir = $2
+mkdir -p cutadapted
 ```
 
 ```{r}
@@ -439,8 +438,11 @@ rc_prime = "GGATTAGATACCCBDGTAGTCAGACCAAGTCTCTGCTACCGTA"
 #Reverse complement generator replaced ambiguous bases with X, replaced X with appropriate reverse complement letter. For more information on ambiguous bases see Lab NB Ch1 page 127
 ```
 
-```{r}
+```{python}
 
+for R1 in "/home/eahernandez_umass_edu/Bioinformatics/16S/*_R1_*.fastq":
+  
+  
 ```
 
 # Filter n' Trim:
