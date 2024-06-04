@@ -107,27 +107,52 @@ If in windows, enable & set up windows subsystem for linux (WSL); can be done in
 
     -   Tools \> Global Options \> Terminal \> set "Initial Directory" to "Current working directory" & "New Terminals open with" to "Bash (Windows subsystems for linux)"
 
--   Bash code should be run in the terminal once opened
+#### 2) Installing conda and loading environment:
 
-    -   <div>
+-   <div>
 
-        ```{bash}
-        mkdir -p ~/miniconda3
-        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
-        bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
-        rm -rf ~/miniconda3/miniconda.sh
-        ```
+    ```{bash}
+    mkdir -p ~/miniconda3
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+    bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+    ```
 
-        ```{bash}
-        ~/miniconda3/bin/conda init bash
-        ```
+    ```{bash}
+    # initiate conda
+    ~/miniconda3/bin/conda init bash
+    ~/miniconda3/bin/conda init zsh
+    # Restart Terminacl (Bash)
+    # RUN EVERY TIME
+    source ~/.bashrc
+    # CHeck conda
+    which conda
+    ```
 
-        ```{bash}
-        export PS1='>' 
-        #Cleans up giant file path that makes it hard to type long Linux codes
-        ```
+    ```{bash}
+    export PS1='>' 
+    #Cleans up giant file path that makes it hard to type long Linux codes
+    ```
 
-        </div>
+    </div>
+
+[Terminal needs to be in conda environment at this point!!!]{.underline}
+
+#### Installing cutadapt in conda environment:
+
+-   
+
+```{bash}
+# configure conda
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+# install cutadapt
+conda create -n cutadapt cutadapt
+# initialize cutadapt environemtn:
+conda activate cutadapt
+# check cutadapt version
+cutadapt --version
+```
 
 -   Install Git:
 
@@ -158,7 +183,7 @@ If in windows, enable & set up windows subsystem for linux (WSL); can be done in
 
 # R:
 
-## One time installs:
+## 1) Install each time:
 
 ```{r}
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -179,29 +204,10 @@ BiocManager::install("cutadapt")# Version 3.19 is for R version 4.4.0 and up
 ```{r}
 library("devtools") # Redunadancies never hurt
 library("dada2")
-library("knitr")
 library("ggplot2")
 library("dplyr")
 library("fastqcr")
 # Call libraries before they can be used
-```
-
-## Getting started:
-
-### Pre-processing:
-
-#### Cutadapt:
-
-Bash = WSL Terminal
-
-```{bash}
-sudo apt install cutadapt #Install cutadapt in linux
-```
-
--   Getting Started:
-
-```{r}
-
 ```
 
 ### List files:
@@ -210,20 +216,14 @@ sudo apt install cutadapt #Install cutadapt in linux
 
 ```{r,}
 # CHANGE to the directory containing the fastq files after unzipping.
-path_16S <- "16S"
-path_23S <- "23S"
-path_q16S <- "q16S"
-path_q23S <- "q23S"
+path_16S <- "~/Bioinformatics/16S"
 # List files in directory
 list.files(path_16S)
-list.files(path_23S)
-list.files(path_q16S)
-list.files(path_q23S)
 ```
 
 ### Reading in files:
 
-```{r, error=TRUE}
+```{r}
 # Forward and reverse fastq filenames have format: SAMPLENAME_R1_001.fastq and SAMPLENAME_R2_001.fastq
 r1_16S <- sort(list.files(path_16S, pattern="_R1_001.fastq", full.names = TRUE))
 r2_16S<- sort(list.files(path_16S, pattern="_R2_001.fastq", full.names = TRUE))
@@ -231,6 +231,7 @@ r2_16S<- sort(list.files(path_16S, pattern="_R2_001.fastq", full.names = TRUE))
 sample.names <- sapply(strsplit(basename(r1_16S), "_"), `[`, 1)
 list(r1_16S)
 list(r2_16S)
+list(sample.names)
 ```
 
 ## Quality Score PDF Print (Output in Drive)
@@ -407,12 +408,67 @@ plotQualityProfile(r2_16S[80])
 dev.off()
 ```
 
-## Filter n' Trim:
+# Cutadapt:
 
-### Terminal:
+```{bash}
+# Make sure Terminal is in the cutadapt environment
+mkdir ~/Bioinfformatics/16S/cutadapted #make directory with for sequences ran through cutadapt with adapters and primers removed.
+```
+
+```{bash}
+#Cutadapt language
+# https://mcic-osu.github.io/2020-12-microbiomics-workshop/05-preprocess-reads.html#A_Script_to_Run_cutadapt3
+set -e -u -o pipefail #We’ll set a couple of options with set that make bash run safer, by making it stop the script whenever an error is encountered (by default, the script will keep running.)
+echo -e "\n## Starting cutadapt script."
+date
+# 
+```
+
+```{bash}
+# 1. Command-line arguments:
+mkdir -p cutadapted
+```
+
+```{r}
+f_prime = "ACACTGACGACATGGTTCTACACCTACGGGNGGCWGCAG"
+r_prime = "TACGGTAGCAGAGACTTGGTCTGACTACHVGGGTATCTAATCC"
+fc_prime = "CTGCWGCCNCCCGTAGGTGTAGAACCATGTCGTCAGTGT"
+rc_prime = "GGATTAGATACCCBDGTAGTCAGACCAAGTCTCTGCTACCGTA"
+
+#Reverse complement generator replaced ambiguous bases with X, replaced X with appropriate reverse complement letter. For more information on ambiguous bases see Lab NB Ch1 page 127
+```
+
+```{python}
+
+for R1 in "/home/eahernandez_umass_edu/Bioinformatics/16S/*_R1_*.fastq":
+  
+  
+```
+
+# Filter n' Trim:
+
+```{r}
+# Place filtered files in filtered subdirectory
+filtR1s <- file.path(path_16S, "filtered", paste0(sample.names, "_F_filt.fastq"))
+filtR2s <- file.path(path_16S, "filtered", paste0(sample.names, "_R_filt.fastq"))
+names(filtR1s) <- sample.names
+names(filtR2s) <- sample.names
+```
+
+```{r}
+out <- filterAndTrim(r1_16S, filtR1s, r2_16S, filtR2s, truncLen=c(250,150),
+              maxN=0, maxEE=c(3,6), truncQ=2, rm.phix=FALSE, #maxEE = 3 and 6, allowing for a max EE ration of 3 and 6                                                                for the forward and reverse reads respectively
+              compress=FALSE, multithread=TRUE) # On Windows set multithread=FALSE
+head(out)
+```
 
 # Test:
 
 ```{r}
+plotQualityProfile(r1_16S[1])
+plotQualityProfile(r2_16S[1])
+```
 
+```{r}
+list(out)
 ```
